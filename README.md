@@ -1,171 +1,191 @@
-# AI Simulation Project
+# AI Simulation Project 🚀  
 
-## Overview
+## Overview  
 
-This project provides a simulation environment for AI models with a focus on evolutionary neural networks. It allows users to configure various simulation parameters and observe how different AI models behave and evolve under various conditions.
+The **AI Simulation Project** is a cutting-edge environment designed to simulate and evolve AI models using **evolutionary neural networks**. With highly customizable parameters and advanced visualization, this project allows users to analyze AI decision-making, observe adaptive behaviors, and optimize neural architectures efficiently.  
 
-## Features
+## Key Features  
 
-- Neural network-based decision making with TensorFlow and NumPy implementations
-- Evolutionary algorithms for training AI agents
-- Customizable simulation parameters through command-line arguments
-- Advanced visualization of AI behavior and learning progress
-- Performance optimizations with NumPy fast path for TensorFlow
-- Comprehensive data collection and statistics tracking
-- Automatic and manual checkpoint system for saving progress
-- Ability to run in headless mode for faster training
-- Built-in benchmarking capabilities
+- 🧠 **Neural Network Decision Making** – Supports both **TensorFlow** and **NumPy** implementations.  
+- 🔄 **Evolutionary Algorithms** – Adaptive learning through natural selection and genetic evolution.  
+- ⚡ **Performance Optimization** – NumPy fast path optimizations for enhanced speed.  
+- 🎨 **Advanced Visualization** – Real-time tracking of AI learning and fitness progression.  
+- 🛠️ **Customizable Parameters** – Adjust settings via command-line arguments.  
+- 🏆 **Benchmarking & Statistics** – Collect performance metrics and optimize models.  
+- 💾 **Checkpoint System** – Save and load progress automatically or manually.  
+- ⚡ **Headless Mode Support** – Run high-speed training without GUI overhead.  
 
-### AI Dot Collector
+---
 
-The AI Dot Collector simulation demonstrates evolutionary AI where dots learn to navigate to a target while avoiding obstacles. Features include:
+## 🏹 AI Dot Collector  
 
-- Population-based evolution across multiple generations
-- Neural network-based decision making for each dot
-- Full 360° movement control with speed adjustment
-- Enhanced fitness calculation with rewards for efficiency
-- Stagnation detection and wall collision penalties
-- Comprehensive visualization with fitness history graph
-- Configurable parameters (population size, mutation rate, etc.)
-- Visual representation of AI learning progress
-- Ability to save and load AI brain models
-- Real-time statistics display with average and best fitness tracking
-- Automatic and manual checkpoints to save progress at key generations
-- Optimized sensor calculations for improved performance
-- Enhanced numerical stability in neural network computations
-- Robust error handling and file management
+The **AI Dot Collector** is a core simulation showcasing evolutionary AI in action. In this scenario, dots **learn to navigate** toward a target while avoiding obstacles, improving their strategy across multiple generations.  
 
-## Installation
+### Features:  
+✅ **Neural Network-Based Movement** – Each dot makes decisions using a trained neural model.  
+✅ **Full 360° Navigation** – Control speed, direction, and acceleration dynamically.  
+✅ **Enhanced Fitness Calculation** – Efficient navigation is rewarded; stagnation and collisions are penalized.  
+✅ **Evolutionary Learning** – Populations evolve over multiple generations.  
+✅ **Real-time Stats & Graphs** – Track AI learning curves, fitness history, and progress.  
+✅ **Save & Load AI Brains** – Preserve trained models for future analysis.  
+✅ **Optimized Sensor Calculations** – Fast, precise environmental detection for each AI agent.  
+✅ **Comprehensive Error Handling** – Ensures smooth execution with minimal failures.  
 
-```
+---
+
+## 🚀 Installation  
+
+Clone the repository and install dependencies:  
+
+```sh
 git clone https://github.com/Mahdiglm/AI-Simulation.git
 cd AI-Simulation
 pip install -r requirements.txt
 ```
 
-## Usage
+---
 
-The simulation can be run directly from the command line with various options:
+## 🎮 Usage  
 
-```
+Run the simulation with customizable options:  
+
+```sh
 python simulation.py [options]
 ```
 
-### Command-line Options:
+### Command-line Options  
 
+```sh
+--no-tensorflow    # Use pure NumPy neural networks  
+--no-fast-path     # Disable NumPy fast path optimization  
+--no-gui           # Run in headless mode (no GUI)  
+--benchmark        # Run performance benchmark  
+--train N          # Train for N generations  
+--load FILE        # Load checkpoint from a saved file  
 ```
---no-tensorflow    Use pure NumPy neural networks instead of TensorFlow
---no-fast-path     Disable NumPy fast path optimization for TensorFlow
---no-gui           Run without GUI (headless mode)
---benchmark        Run performance benchmark
---train N          Train for N generations in headless mode
---load FILE        Load checkpoint from FILE
-```
 
-### Examples:
+### Examples  
 
-Run the simulation with the default settings:
+Run the simulation with default settings:  
 
-```
+```sh
 python simulation.py
 ```
 
-Run in headless mode for faster training:
+Train AI for **100 generations** in headless mode:  
 
-```
-python simulation.py --no-gui
-```
-
-Train for 100 generations in headless mode:
-
-```
-python simulation.py --train 100
+```sh
+python simulation.py --train 100 --no-gui
 ```
 
-Load a previous checkpoint:
+Load a saved checkpoint:  
 
-```
+```sh
 python simulation.py --load checkpoints/checkpoint_gen_50.json
 ```
 
-Run a performance benchmark:
+Run a **performance benchmark**:  
 
-```
+```sh
 python simulation.py --benchmark
 ```
 
-### Interactive Controls:
+---
 
-While the simulation is running, you can use the following keyboard controls:
+## ⌨️ Interactive Controls  
 
-- Space: Pause/Resume simulation
-- R: Reset simulation
-- S: Save checkpoint
-- 1: Normal speed
-- 2: 2x speed
-- 5: 5x speed
-- 0: 10x speed
-- D: Toggle showing all dots or just the best dot
-- G: Toggle graph display
+While running, control the simulation using:  
 
-## Project Structure
+| Key | Action |
+|-----|--------|
+| **Space** | Pause/Resume simulation |
+| **R** | Reset simulation |
+| **S** | Save checkpoint |
+| **1** | Normal speed |
+| **2** | 2x speed |
+| **5** | 5x speed |
+| **0** | 10x speed |
+| **D** | Toggle between best dot & all dots |
+| **G** | Show/hide fitness graph |
 
-- `simulation.py`: Main simulation manager and entry point
-- `dot.py`: Implements the AI dot agents with sensors and physics
-- `population.py`: Manages populations of dots and evolution
-- `neural_network.py`: Pure NumPy implementation of neural networks
-- `tf_neural_network.py`: TensorFlow implementation with optimizations
-- `obstacle.py`: Handles obstacles and collision detection
-- `constants.py`: Defines various constants used throughout the project
+---
 
-## Technical Details
+## 🏗️ Project Structure  
 
-### Neural Network Architecture
+```
+📂 AI-Simulation/
+ ├── simulation.py        # Main simulation manager
+ ├── dot.py               # AI-controlled dots with sensors & movement
+ ├── population.py        # Evolutionary population management
+ ├── neural_network.py    # NumPy-based neural network
+ ├── tf_neural_network.py # TensorFlow-based neural network
+ ├── obstacle.py          # Handles obstacles & collision detection
+ ├── constants.py         # Global constants
+ ├── runs/                # Stored simulation data & checkpoints
+```
 
-The AI dots use an enhanced neural network with:
+---
 
-- Input layer: 15 neurons
-  - 8 distance sensors in different directions (N, NE, E, SE, S, SW, W, NW)
-  - 2 normalized target position values (dx, dy)
-  - 2 current velocity values (vel_x, vel_y)
-  - 2 distance metrics (nearest obstacle distance, target distance)
-  - 1 current speed value (normalized)
-- Hidden layers: Multiple configurable layers (2 by default)
-  - Each with 16 neurons and leaky ReLU activation
-- Output layer: 3 neurons
-  - Direction (0 to 2π)
-  - Acceleration (-1 to 1)
-  - Speed control (0 to 1)
+## 🔬 Technical Overview  
 
-### Genetic Algorithm
+### 🧠 Neural Network Architecture  
 
-- Selection: Tournament selection (selects the best from random subsets)
-- Crossover: Single-point crossover between parent networks
-- Mutation: Random weight adjustments controlled by mutation rate
-- Fitness: Enhanced calculation considering distance, progress, efficiency
-- Elitism: Best performers are preserved unchanged in each generation
+- **Input Layer (15 neurons)**  
+  - 8 distance sensors (N, NE, E, SE, S, SW, W, NW)  
+  - 2 normalized target coordinates (dx, dy)  
+  - 2 velocity components (vel_x, vel_y)  
+  - 2 distance metrics (nearest obstacle & target distance)  
+  - 1 normalized speed value  
 
-### Optimization Features
+- **Hidden Layers**  
+  - Configurable (default: **2 layers, 16 neurons each**)  
+  - **Activation**: Leaky ReLU  
 
-- Optional TensorFlow and NumPy implementations
-- NumPy fast path for efficient feedforward operations
-- Optimized sensor calculations for improved performance
-- Efficient collision detection with early-exit optimizations
-- Configurable execution speed for visualization vs. training
+- **Output Layer (3 neurons)**  
+  - Direction (0 - 2π)  
+  - Acceleration (-1 to 1)  
+  - Speed Control (0 to 1)  
 
-## Data Management
+### 🧬 Genetic Algorithm  
 
-Simulation runs are organized in the following directory structure:
+- **Selection** – Tournament selection strategy  
+- **Crossover** – Single-point crossover for genetic recombination  
+- **Mutation** – Controlled random weight mutations  
+- **Fitness Calculation** – Distance, efficiency, progress evaluation  
+- **Elitism** – Best performers are preserved across generations  
 
-- `runs/`: Main directory for all simulation runs
-  - `run_[timestamp]/`: Directory for a specific run
-    - `checkpoints/`: Saved model checkpoints
-    - `stats/`: Statistics data in JSON format
+### ⚡ Performance Optimizations  
 
-## License
+- **NumPy & TensorFlow implementations** for flexibility  
+- **Optimized feedforward calculations** for fast neural processing  
+- **Efficient collision detection** with early-exit optimizations  
+- **Configurable execution speed** for training vs. visualization  
 
-MIT
+---
 
-## Contributing
+## 📊 Data Management  
 
-Contributions are welcome! Please feel free to submit a Pull Request.
+Simulation runs are stored in:  
+
+```
+📂 runs/
+ ├── run_[timestamp]/      # Each run has its own directory
+ │   ├── checkpoints/      # Saved AI models
+ │   ├── stats/            # JSON-formatted performance statistics
+```
+
+---
+
+## 📜 License  
+
+This project is licensed under the **MIT License**.  
+
+---
+
+## 🤝 Contributing  
+
+Contributions are welcome! If you'd like to improve the project, please submit a **Pull Request**.  
+
+---
+
+💡 **Enhance your AI simulation skills & explore the power of neural evolution!** 🚀  
