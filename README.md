@@ -54,7 +54,7 @@ The simulation uses a genetic algorithm approach with neural networks controllin
 ## Installation
 
 ```
-git clone https://github.com/yourusername/ai-simulation.git
+git clone https://github.com/Mahdiglm/AI-Simulation.git
 cd ai-simulation
 pip install -r requirements.txt
 ```
