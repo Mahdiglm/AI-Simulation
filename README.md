@@ -2,20 +2,23 @@
 
 ## Overview
 
-This project provides a simulation environment for AI models. It allows users to configure various simulation parameters and observe how different AI models behave under various conditions.
+This project provides a simulation environment for AI models with a focus on evolutionary neural networks. It allows users to configure various simulation parameters and observe how different AI models behave and evolve under various conditions.
 
 ## Features
 
-- Interactive menu-driven interface with enhanced visual effects
-- Customizable simulation parameters
-- Visualization of simulation results
-- Particle effects and animations for a modern UI experience
-- AI Dot Collector simulation with visual representation
-- Support for different AI models (more coming soon)
+- Neural network-based decision making with TensorFlow and NumPy implementations
+- Evolutionary algorithms for training AI agents
+- Customizable simulation parameters through command-line arguments
+- Advanced visualization of AI behavior and learning progress
+- Performance optimizations with NumPy fast path for TensorFlow
+- Comprehensive data collection and statistics tracking
+- Automatic and manual checkpoint system for saving progress
+- Ability to run in headless mode for faster training
+- Built-in benchmarking capabilities
 
 ### AI Dot Collector
 
-The AI Dot Collector simulation demonstrates a simple evolutionary AI model where dots learn to navigate to a target while avoiding obstacles. Features include:
+The AI Dot Collector simulation demonstrates evolutionary AI where dots learn to navigate to a target while avoiding obstacles. Features include:
 
 - Population-based evolution across multiple generations
 - Neural network-based decision making for each dot
@@ -32,95 +35,88 @@ The AI Dot Collector simulation demonstrates a simple evolutionary AI model wher
 - Enhanced numerical stability in neural network computations
 - Robust error handling and file management
 
-## Simulations
-
-### AI Dot Collector
-
-The AI Dot Collector simulation demonstrates a simple evolutionary AI model where dots learn to navigate to a target while avoiding obstacles. Features include:
-
-- Population-based evolution across multiple generations
-- Neural network-based decision making for each dot
-- Full 360° movement control with speed adjustment
-- Enhanced fitness calculation with rewards for efficiency
-- Stagnation detection and wall collision penalties
-- Comprehensive visualization with fitness history graph
-- Configurable parameters (population size, mutation rate, etc.)
-- Visual representation of AI learning progress
-- Ability to save and load AI brain models
-- Real-time statistics display with average and best fitness tracking
-
-The simulation uses a genetic algorithm approach with neural networks controlling each dot's movement. The dots evolve over generations, with the most successful ones (those that reach the target quickly or get closest to it) passing their genes to the next generation.
-
 ## Installation
 
 ```
 git clone https://github.com/Mahdiglm/AI-Simulation.git
-cd ai-simulation
+cd AI-Simulation
 pip install -r requirements.txt
 ```
 
 ## Usage
 
-Run the main script to start the simulation:
+The simulation can be run directly from the command line with various options:
 
 ```
-python main.py
+python simulation.py [options]
 ```
 
-Follow the on-screen prompts to configure and run your simulation.
+### Command-line Options:
 
-For the AI Dot Collector simulation:
+```
+--no-tensorflow    Use pure NumPy neural networks instead of TensorFlow
+--no-fast-path     Disable NumPy fast path optimization for TensorFlow
+--no-gui           Run without GUI (headless mode)
+--benchmark        Run performance benchmark
+--train N          Train for N generations in headless mode
+--load FILE        Load checkpoint from FILE
+```
 
-1. Select "Start Simulation" from the main menu
-2. Choose "AI Dot Collector"
-3. Configure the simulation parameters if desired
-4. Select "Start Simulation"
-5. The simulation will open in a separate window using Pygame
-6. Use the keyboard controls shown in the simulation window:
-   - Space: Pause/Resume
-   - R: Reset simulation
-   - +/-: Change speed
-   - M: Generate new map (keep AI)
-   - S: Save best brain
-   - L: Load saved brain
-   - C: Create checkpoint of current simulation state
-   - A: Toggle all dots/best dot
-   - V: Toggle sensor visualization
-   - G: Toggle fitness graph
-   - Esc: Return to menu
-7. Close the window when finished to return to the main menu
+### Examples:
 
-Checkpoints are automatically saved every 10 generations (configurable) and stored in the `checkpoints` directory. Manual checkpoints can be created at any time by pressing the 'C' key.
+Run the simulation with the default settings:
 
-## Requirements
+```
+python simulation.py
+```
 
-- Python 3.8 or higher
-- Required packages:
-  - colorama==0.4.6 (for terminal colors)
-  - pygame==2.5.0 (for AI Dot Collector simulation)
-  - numpy==1.24.3 (for neural network operations)
+Run in headless mode for faster training:
 
-## Configuration
+```
+python simulation.py --no-gui
+```
 
-The simulation can be configured through the interactive menu. Options include:
+Train for 100 generations in headless mode:
 
-### General Settings
+```
+python simulation.py --train 100
+```
 
-- Simulation duration
-- Environment complexity
-- Random seed
-- Log level
-- Save results toggle
+Load a previous checkpoint:
 
-### AI Dot Collector Settings
+```
+python simulation.py --load checkpoints/checkpoint_gen_50.json
+```
 
-- Population size: Number of AI dots in each generation
-- Dot count: Number of dots displayed on screen (for visual clarity)
-- Obstacle count: Number of obstacles in the environment
-- Memory usage (low, medium, high)
-- Mutation rate: Controls how much neural networks change between generations
-- Number of generations: Maximum generations to run
-- Options to save/load the best performing "brain" (neural network)
+Run a performance benchmark:
+
+```
+python simulation.py --benchmark
+```
+
+### Interactive Controls:
+
+While the simulation is running, you can use the following keyboard controls:
+
+- Space: Pause/Resume simulation
+- R: Reset simulation
+- S: Save checkpoint
+- 1: Normal speed
+- 2: 2x speed
+- 5: 5x speed
+- 0: 10x speed
+- D: Toggle showing all dots or just the best dot
+- G: Toggle graph display
+
+## Project Structure
+
+- `simulation.py`: Main simulation manager and entry point
+- `dot.py`: Implements the AI dot agents with sensors and physics
+- `population.py`: Manages populations of dots and evolution
+- `neural_network.py`: Pure NumPy implementation of neural networks
+- `tf_neural_network.py`: TensorFlow implementation with optimizations
+- `obstacle.py`: Handles obstacles and collision detection
+- `constants.py`: Defines various constants used throughout the project
 
 ## Technical Details
 
@@ -141,45 +137,30 @@ The AI dots use an enhanced neural network with:
   - Acceleration (-1 to 1)
   - Speed control (0 to 1)
 
-The neural network uses advanced techniques like:
-
-- He initialization for better learning with ReLU activation
-- Leaky ReLU to prevent "dying neurons"
-- Multiple hidden layers for more complex behavior modeling
-- Numerical stabilization with clipping for overflow prevention
-
 ### Genetic Algorithm
 
 - Selection: Tournament selection (selects the best from random subsets)
 - Crossover: Single-point crossover between parent networks
-  - Randomly crosses over weights and biases between parents
-  - Separate crossover points for each layer in the network
 - Mutation: Random weight adjustments controlled by mutation rate
-  - Uses normal distribution for more natural changes
-- Fitness: Enhanced calculation considering:
-  - Distance to target
-  - Progress toward the goal
-  - Efficiency (steps taken)
-  - Penalties for wall hits and stagnation
+- Fitness: Enhanced calculation considering distance, progress, efficiency
 - Elitism: Best performers are preserved unchanged in each generation
 
-### Physics Simulation
+### Optimization Features
 
-- Continuous physics model with acceleration, velocity, friction, and position
-- Full 360° movement control with speed adjustment
-- Collision detection with walls and obstacles
-- Directional sensors that detect distances to walls and obstacles
-- Position history tracking for stagnation detection
-- Smooth movement with velocity-based updates
+- Optional TensorFlow and NumPy implementations
+- NumPy fast path for efficient feedforward operations
+- Optimized sensor calculations for improved performance
+- Efficient collision detection with early-exit optimizations
+- Configurable execution speed for visualization vs. training
 
-### Visualization
+## Data Management
 
-- Side-by-side display of simulation and statistics
-- Fitness history graph showing best and average fitness
-- Color coding for different dot states (dead, reached goal, moving)
-- Sensor visualization to see what the AI perceives
-- Direction indicators showing movement intent
-- Comprehensive statistics display with generation metrics
+Simulation runs are organized in the following directory structure:
+
+- `runs/`: Main directory for all simulation runs
+  - `run_[timestamp]/`: Directory for a specific run
+    - `checkpoints/`: Saved model checkpoints
+    - `stats/`: Statistics data in JSON format
 
 ## License
 
