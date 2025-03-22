@@ -102,28 +102,51 @@ class Dot:
 
     def draw(self, surface: pygame.Surface) -> None:
         """Draw the dot on the given surface."""
+        # Ensure coordinates are valid by safely converting to integers
+        try:
+            # Convert to float first, then to int to handle potential string types
+            pos_x, pos_y = int(round(float(self.x))), int(round(float(self.y)))
+        except (ValueError, TypeError):
+            # Fall back to 0,0 if conversion fails
+            print(f"Warning: Invalid position values: {self.x}, {self.y}")
+            pos_x, pos_y = 0, 0
+            
         if self.dead:
             # Draw dead dot in gray
-            pygame.draw.circle(surface, (100, 100, 100), (int(float(self.x)), int(float(self.y))), 6)
+            pygame.draw.circle(surface, (100, 100, 100), (pos_x, pos_y), 6)
         elif self.reached_goal:
             # Draw successful dot in green
-            pygame.draw.circle(surface, GREEN, (int(float(self.x)), int(float(self.y))), 7)
+            pygame.draw.circle(surface, GREEN, (pos_x, pos_y), 7)
         else:
             # Draw regular dot with a color based on its fitness
-            fitness_color = min(255, int(self.fitness * 255))
+            # Ensure fitness value is valid
+            fitness_color = min(255, max(0, int(self.fitness * 255)))
             color = (255 - fitness_color, fitness_color, 200)
             
-            # Draw the dot with size proportional to speed
-            size = 5 + int(self.get_speed() / self.max_velocity * 3)
-            pygame.draw.circle(surface, color, (int(float(self.x)), int(float(self.y))), size)
+            # Calculate size based on speed, with bounds checking
+            try:
+                speed = self.get_speed()
+                max_vel = max(0.1, float(self.max_velocity))  # Ensure positive value
+                size = 5 + int(min(10, max(0, speed / max_vel * 3)))  # Limit size range
+            except (ValueError, TypeError, ZeroDivisionError):
+                # Fall back to default size if calculation fails
+                size = 5
+                
+            pygame.draw.circle(surface, color, (pos_x, pos_y), size)
             
             # Draw a line showing direction of movement
             if self.get_speed() > 0.1:
-                direction_x = float(self.x) + (float(self.velocity_x) / self.get_speed() * 10)
-                direction_y = float(self.y) + (float(self.velocity_y) / self.get_speed() * 10)
-                pygame.draw.line(surface, (200, 200, 255), 
-                             (int(float(self.x)), int(float(self.y))), 
-                             (int(direction_x), int(direction_y)), 2)
+                try:
+                    # Calculate direction safely
+                    speed = max(0.1, self.get_speed())  # Avoid division by zero
+                    direction_x = pos_x + int((float(self.velocity_x) / speed * 10))
+                    direction_y = pos_y + int((float(self.velocity_y) / speed * 10))
+                    pygame.draw.line(surface, (200, 200, 255), 
+                                 (pos_x, pos_y), 
+                                 (direction_x, direction_y), 2)
+                except (ValueError, TypeError, ZeroDivisionError):
+                    # Skip drawing direction line if calculation fails
+                    pass
                 
             # Optionally draw sensors (can be toggled)
             self.draw_sensors(surface)
@@ -314,15 +337,25 @@ class Dot:
             directions.append((math.cos(angle), math.sin(angle)))
         
         # Pre-extract dot position once
-        x1, y1 = self.x, self.y
-        
+        try:
+            x1, y1 = float(self.x), float(self.y)
+        except (ValueError, TypeError):
+            # Fall back to 0,0 if conversion fails
+            print(f"Warning: Invalid dot position in sensor calculation: {self.x}, {self.y}")
+            x1, y1 = 0.0, 0.0
+            
         # Process each obstacle only once, checking all sensors against it
         for obstacle in obstacles:
             # Convert obstacle rect to sides only once per obstacle
-            left, top, width, height = obstacle.rect
-            right = left + width
-            bottom = top + height
-            
+            try:
+                left, top, width, height = obstacle.rect
+                right = left + width
+                bottom = top + height
+            except (ValueError, TypeError, AttributeError):
+                # Skip invalid obstacles
+                print(f"Warning: Invalid obstacle format: {obstacle}")
+                continue
+                
             # Define the four sides of the rectangle - compute only once per obstacle
             sides = [
                 ((left, top), (right, top)),     # Top
@@ -357,16 +390,22 @@ class Dot:
                         u = -((x1 - x2) * (y1 - sy1) - (y1 - y2) * (x1 - sx1)) / denom
                         
                         if 0 <= u <= 1:  # Intersection found
-                            # Calculate intersection point
-                            ix = x1 + t * (x2 - x1)
-                            iy = y1 + t * (y2 - y1)
-                            
-                            # Calculate distance
-                            dist = math.sqrt((ix - x1)**2 + (iy - y1)**2)
-                            if dist < min_dist:
-                                min_dist = dist
-                                # Update sensor distance (normalized)
-                                sensor_distances[i] = min_dist / max_sensor_distance
+                            try:
+                                # Calculate intersection point
+                                ix = x1 + t * (x2 - x1)
+                                iy = y1 + t * (y2 - y1)
+                                
+                                # Calculate distance
+                                dist = math.sqrt((ix - x1)**2 + (iy - y1)**2)
+                                if dist < min_dist:
+                                    min_dist = dist
+                                    # Update sensor distance (normalized)
+                                    normalized_dist = min_dist / max_sensor_distance
+                                    # Ensure the value is within valid range
+                                    sensor_distances[i] = max(0.0, min(1.0, normalized_dist))
+                            except (ValueError, TypeError):
+                                # Skip problematic calculations
+                                continue
         
         return sensor_distances
         

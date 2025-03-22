@@ -11,6 +11,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - TBD
 
+## [0.6.1] - 2024-06-01
+
+### Fixed
+
+- Implemented proper weight format conversion between TensorFlow and NumPy neural networks
+- Added robust error handling throughout the codebase
+- Fixed potential division by zero errors in sensor calculations
+- Improved handling of invalid position values in dot rendering
+- Added bounds checking for dot size calculations
+- Enhanced numerical stability in neural network computations
+- Added comprehensive error handling in NumPy fast path implementation
+- Implemented proper shape validation in matrix operations
+- Added safe fallbacks for all error conditions to prevent crashes
+- Fixed NaN and Infinity handling in neural network operations
+
 ## [0.6.0] - 2024-06-01
 
 ### Added

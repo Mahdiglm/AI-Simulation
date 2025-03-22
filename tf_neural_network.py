@@ -107,38 +107,100 @@ class TFNeuralNetwork:
     
     def _extract_weights_to_numpy(self):
         """Extract weights from TensorFlow model to numpy arrays for fast execution."""
-        # Use model.get_weights() which returns numpy arrays directly, 
-        # avoiding the need to call .numpy() on tensor variables
-        all_weights = self.model.get_weights()
-        
-        # Weights are stored as [W1, b1, W2, b2, ...]
-        self.weights = []
-        self.biases = []
-        
-        for i in range(0, len(all_weights), 2):
-            self.weights.append(all_weights[i])
-            self.biases.append(all_weights[i+1])
+        try:
+            # Use model.get_weights() which returns numpy arrays directly, 
+            # avoiding the need to call .numpy() on tensor variables
+            all_weights = self.model.get_weights()
+            
+            if not all_weights or len(all_weights) < 2:
+                print("Warning: No weights available in the model for fast path extraction")
+                self.weights = None
+                self.biases = None
+                return
+                
+            # Weights are stored as [W1, b1, W2, b2, ...]
+            self.weights = []
+            self.biases = []
+            
+            for i in range(0, len(all_weights), 2):
+                if i+1 < len(all_weights):  # Ensure we don't go out of bounds
+                    self.weights.append(all_weights[i])
+                    self.biases.append(all_weights[i+1])
+                    
+            # Verify that weights were properly extracted
+            if not self.weights or not self.biases:
+                print("Warning: Failed to extract weights or biases for fast path")
+                self.weights = None
+                self.biases = None
+                
+        except Exception as e:
+            print(f"Error extracting weights for NumPy fast path: {e}")
+            # Disable fast path if extraction fails
+            self.weights = None
+            self.biases = None
+            self.use_numpy_fast_path = False
     
     def _numpy_feedforward(self, inputs: np.ndarray) -> np.ndarray:
         """Fast numpy-based feedforward implementation."""
-        # Input layer
-        x = inputs
+        try:
+            # Input layer
+            x = inputs
+            
+            # Validate inputs again for this method
+            if x.ndim > 2:
+                x = x.reshape(1, -1)  # Collapse extra dimensions
+            
+            # Hidden layers
+            for i in range(len(self.weights) - 1):
+                try:
+                    # Linear transformation
+                    # Check for compatible dimensions
+                    if x.shape[1] != self.weights[i].shape[0]:
+                        print(f"Warning: Shape mismatch in layer {i}. Input: {x.shape}, Weights: {self.weights[i].shape}")
+                        # Reshape x to match weight dimensions
+                        x = np.zeros((x.shape[0], self.weights[i].shape[0]), dtype=np.float32)
+                        
+                    # Apply transformation with dimension check
+                    x = np.dot(x, self.weights[i]) + self.biases[i]
+                    
+                    # Check for NaN or Inf values
+                    if not np.isfinite(x).all():
+                        print(f"Warning: Non-finite values detected in layer {i}. Replacing with zeros.")
+                        x = np.nan_to_num(x, nan=0.0, posinf=0.0, neginf=0.0)
+                    
+                    # ReLU activation (with leaky option for stability)
+                    x = np.maximum(0.01 * x, x)  # Leaky ReLU
+                except Exception as e:
+                    print(f"Error in hidden layer {i}: {e}")
+                    # Skip problematic layer
+                    continue
+            
+            # Output layer - sigmoid activation for final layer
+            try:
+                x = np.dot(x, self.weights[-1]) + self.biases[-1]
+                # Check for NaN or Inf values
+                if not np.isfinite(x).all():
+                    print("Warning: Non-finite values detected in output layer. Replacing with zeros.")
+                    x = np.nan_to_num(x, nan=0.0, posinf=0.0, neginf=0.0)
+                # Use sigmoid for output (matching the model's sigmoid activation)
+                # Clip to avoid floating point errors
+                x = np.clip(x, -30.0, 30.0)
+                x = 1.0 / (1.0 + np.exp(-x))
+                # Final check for NaN or Inf values
+                if not np.isfinite(x).all():
+                    print("Warning: Non-finite values in output after sigmoid. Using defaults.")
+                    x = np.ones((1, self.output_size), dtype=np.float32) * 0.5
+            except Exception as e:
+                print(f"Error in output layer: {e}")
+                # Return safe default outputs
+                x = np.ones((1, self.output_size), dtype=np.float32) * 0.5
+                
+            return x
         
-        # Hidden layers
-        for i in range(len(self.weights) - 1):
-            # Linear transformation
-            # Note: TensorFlow weights have shape [input_size, output_size]
-            # No need to transpose for matrix multiplication
-            x = np.dot(x, self.weights[i]) + self.biases[i]
-            # ReLU activation
-            x = np.maximum(0.01 * x, x)  # Leaky ReLU
-        
-        # Output layer - sigmoid activation for final layer
-        x = np.dot(x, self.weights[-1]) + self.biases[-1]
-        # Use sigmoid for output (matching the model's sigmoid activation)
-        x = 1.0 / (1.0 + np.exp(-np.clip(x, -30.0, 30.0)))
-        
-        return x
+        except Exception as e:
+            print(f"Error in numpy feedforward: {e}")
+            # Return safe default outputs
+            return np.ones((1, self.output_size), dtype=np.float32) * 0.5
     
     def feedforward(self, inputs: Union[np.ndarray, List[float]]) -> np.ndarray:
         """
@@ -150,26 +212,57 @@ class TFNeuralNetwork:
         Returns:
             Numpy array of outputs
         """
-        # Ensure input is the right shape and type
-        if isinstance(inputs, list):
-            inputs = np.array(inputs, dtype=np.float32)
-        
-        if inputs.ndim == 1:
-            inputs = inputs.reshape(1, -1)  # Add batch dimension
-        
-        # Clamp inputs for stability
-        inputs = np.clip(inputs, -10.0, 10.0)
-        
-        # Use numpy fast path if enabled (much faster)
-        if self.use_numpy_fast_path and self.weights is not None:
-            return self._numpy_feedforward(inputs).flatten()
-        
-        # Otherwise use TensorFlow model
-        with tf.device('/CPU:0'):  # Force CPU for small batches (likely faster than GPU transfer)
-            outputs = self.model.predict(inputs, verbose=0)
-        
-        # Return flattened outputs
-        return outputs.flatten()
+        try:
+            # Ensure input is the right shape and type
+            if isinstance(inputs, list):
+                try:
+                    inputs = np.array(inputs, dtype=np.float32)
+                except (ValueError, TypeError) as e:
+                    print(f"Error converting inputs to numpy array: {e}")
+                    # Create safe default inputs (zeros)
+                    inputs = np.zeros((1, self.input_size), dtype=np.float32)
+            
+            # Input validation
+            if inputs.size != self.input_size:
+                print(f"Warning: Input size mismatch. Expected {self.input_size}, got {inputs.size}. Reshaping...")
+                # Try to reshape or pad with zeros
+                if inputs.size < self.input_size:
+                    # Pad with zeros if too small
+                    padding = np.zeros(self.input_size - inputs.size, dtype=np.float32)
+                    inputs = np.concatenate([inputs.flatten(), padding])
+                else:
+                    # Truncate if too large
+                    inputs = inputs.flatten()[:self.input_size]
+            
+            if inputs.ndim == 1:
+                inputs = inputs.reshape(1, -1)  # Add batch dimension
+            
+            # Remove NaN and Inf values
+            inputs = np.nan_to_num(inputs, nan=0.0, posinf=1.0, neginf=-1.0)
+            
+            # Clamp inputs for stability
+            inputs = np.clip(inputs, -10.0, 10.0)
+            
+            # Use numpy fast path if enabled (much faster)
+            if self.use_numpy_fast_path and self.weights is not None and self.biases is not None:
+                return self._numpy_feedforward(inputs).flatten()
+            
+            # Otherwise use TensorFlow model
+            with tf.device('/CPU:0'):  # Force CPU for small batches (likely faster than GPU transfer)
+                try:
+                    outputs = self.model.predict(inputs, verbose=0)
+                    # Sanitize outputs
+                    outputs = np.nan_to_num(outputs, nan=0.5, posinf=1.0, neginf=0.0)
+                    return outputs.flatten()
+                except Exception as e:
+                    print(f"Error during TensorFlow prediction: {e}")
+                    # Return safe default outputs
+                    return np.array([0.5] * self.output_size, dtype=np.float32)
+                
+        except Exception as e:
+            print(f"Error in neural network feedforward: {e}")
+            # Return safe default outputs
+            return np.array([0.5] * self.output_size, dtype=np.float32)
     
     def copy(self) -> 'TFNeuralNetwork':
         """

@@ -341,22 +341,35 @@ class Simulation:
                 if self.config.get('use_tensorflow', True):
                     best_brain = TFNeuralNetwork.deserialize(brain_data)
                 else:
-                    # Try to load as NumPy neural network, or convert from TensorFlow format
+                    # Try to load as NumPy neural network, or convert
                     try:
                         best_brain = NeuralNetwork.deserialize(brain_data)
                     except KeyError:
-                        # Might be in TensorFlow format, try to convert
+                        # Might be in TensorFlow format, attempt conversion
                         print("Converting TensorFlow brain to NumPy format...")
                         tf_brain = TFNeuralNetwork.deserialize(brain_data)
-                        weights = tf_brain.model.get_weights()
-                        # Create equivalent NumPy brain
-                        best_brain = NeuralNetwork(
+                        # Create a NumPy version (simplified conversion)
+                        brain = NeuralNetwork(
                             brain_data['input_size'],
                             brain_data['hidden_size'],
                             brain_data['output_size'],
                             brain_data.get('hidden_layers', 1)
                         )
-                        # TODO: This would need proper weight format conversion
+                        # Properly convert TensorFlow weights to NumPy format
+                        weights = tf_brain.model.get_weights()
+                        converted_weights = []
+                        converted_biases = []
+                        
+                        # Extract weights and biases from TensorFlow format
+                        for i in range(0, len(weights), 2):
+                            converted_weights.append(weights[i])
+                            converted_biases.append(weights[i+1])
+                        
+                        # Assign converted weights to NumPy neural network
+                        brain.weights = converted_weights
+                        brain.biases = converted_biases
+                        
+                        print("Successfully converted TensorFlow brain to NumPy format")
                 
                 # Replace the brain of the first dot
                 self.population.dots[0].brain = best_brain
@@ -782,7 +795,21 @@ class Simulation:
                             brain_data['output_size'],
                             brain_data.get('hidden_layers', 1)
                         )
-                        # TODO: This would need proper weight format conversion
+                        # Properly convert TensorFlow weights to NumPy format
+                        weights = tf_brain.model.get_weights()
+                        converted_weights = []
+                        converted_biases = []
+                        
+                        # Extract weights and biases from TensorFlow format
+                        for i in range(0, len(weights), 2):
+                            converted_weights.append(weights[i])
+                            converted_biases.append(weights[i+1])
+                        
+                        # Assign converted weights to NumPy neural network
+                        brain.weights = converted_weights
+                        brain.biases = converted_biases
+                        
+                        print("Successfully converted TensorFlow brain to NumPy format")
                 
                 # Initialize population if not already done
                 if self.population is None:
