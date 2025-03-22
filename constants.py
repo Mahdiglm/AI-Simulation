@@ -1,0 +1,48 @@
+"""
+Constants for the AI Dot Collector simulation.
+
+This module defines various constants used throughout the simulation.
+"""
+
+# Colors (RGB)
+BLACK = (0, 0, 0)
+WHITE = (255, 255, 255)
+RED = (255, 0, 0)
+GREEN = (0, 255, 0)
+BLUE = (0, 0, 255)
+YELLOW = (255, 255, 0)
+CYAN = (0, 255, 255)
+MAGENTA = (255, 0, 255)
+GRAY = (128, 128, 128)
+LIGHT_GRAY = (200, 200, 200)
+DARK_GRAY = (50, 50, 50)
+
+# Simulation constants
+DEFAULT_SCREEN_WIDTH = 800
+DEFAULT_SCREEN_HEIGHT = 600
+DEFAULT_POPULATION_SIZE = 100
+DEFAULT_DOT_COUNT = 50
+DEFAULT_MAX_STEPS = 400
+DEFAULT_OBSTACLE_COUNT = 5
+DEFAULT_FPS = 60
+DEFAULT_MUTATION_RATE = 0.05
+
+# Neural network constants
+DEFAULT_HIDDEN_SIZE = 16
+DEFAULT_HIDDEN_LAYERS = 2
+
+# Key mappings
+KEY_QUIT = 'q'
+KEY_PAUSE = ' '  # Space
+KEY_RESET = 'r'
+KEY_SAVE = 's'
+KEY_LOAD = 'l'
+KEY_INCREASE_SPEED = '+'
+KEY_DECREASE_SPEED = '-'
+KEY_TOGGLE_SENSORS = 'v'
+KEY_TOGGLE_DISPLAY = 'd'
+KEY_TOGGLE_GRAPH = 'g'
+KEY_NORMAL_SPEED = '1'
+KEY_DOUBLE_SPEED = '2'
+KEY_FAST_SPEED = '5'
+KEY_MAX_SPEED = '0' 
