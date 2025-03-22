@@ -9,12 +9,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- TBD
+
+## [0.6.0] - 2024-06-01
+
+### Added
+
 - Checkpoint system for saving simulation state at specific generations
 - Automatic checkpoints at configurable intervals
 - Manual checkpoint creation with 'C' key
 - Checkpoint naming with generation number and timestamp
 - Tanh activation function as an alternative activation option
 - More detailed numerical stability warnings
+- Git integration for version control
+- Improved README documentation with accurate usage instructions
+- MIT License
 
 ### Changed
 
